@@ -1,0 +1,150 @@
+<div class="breadcrumb-wrapper" aria-label="Breadcrumb">
+  <nav class="breadcrumb" role="navigation">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item">
+        <a href="{{ routes.root_url }}">Home</a>
+      </li>
+
+      {% if request.path == '/collections' %}
+        <li class="breadcrumb-item is-active">Collections</li>
+
+      {% elsif collection and product %}
+        <li class="breadcrumb-item">
+          <a href="{{ routes.collections_url }}">Collections</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="{{ collection.url }}">
+            {{ collection.metafields.breadcrumb.label | default: collection.title }}
+          </a>
+        </li>
+        <li class="breadcrumb-item is-active">
+          {{ product.title }}
+        </li>
+
+      {% elsif collection %}
+        <li class="breadcrumb-item">
+          <a href="{{ routes.collections_url }}">Collections</a>
+        </li>
+        <li class="breadcrumb-item is-active">
+          {{ collection.metafields.breadcrumb.label | default: collection.title }}
+        </li>
+
+      {% elsif product %}
+        {% assign primary_collection = product.metafields.custom.primary_collection.value %}
+        {% if primary_collection %}
+          <li class="breadcrumb-item">
+            <a href="{{ routes.collections_url }}">Collections</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="{{ primary_collection.url }}">
+              {{ primary_collection.metafields.breadcrumb.label | default: primary_collection.title }}
+            </a>
+          </li>
+        {% endif %}
+        <li class="breadcrumb-item is-active">
+          {{ product.title }}
+        </li>
+      {% endif %}
+    </ol>
+  </nav>
+</div>
+
+<style>
+  .breadcrumb-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .breadcrumb-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    font-size: 1.75rem;
+    padding: 0;
+    margin: 1rem 10%;
+    white-space: nowrap;
+    min-width: max-content;
+  }
+
+  .breadcrumb-item {
+    flex-shrink: 0;
+  }
+
+  .breadcrumb-item::after {
+    content: "/";
+    margin-left: 0.5rem;
+    color: #999;
+  }
+
+  .breadcrumb-item:last-child::after {
+    content: "";
+  }
+
+  .breadcrumb-item.is-active {
+    font-weight: bold;
+    color: #000;
+  }
+
+  .breadcrumb-item a {
+    text-decoration: none;
+    color: #555;
+    transition: color 0.2s ease;
+  }
+
+  .breadcrumb-item a:hover {
+    color: #000;
+  }
+
+  /* Tablet ve küçük ekranlar */
+  @media screen and (max-width: 1024px) {
+    .breadcrumb-list {
+      margin: 1rem 4%;
+      font-size: 1.75rem;
+    }
+  }
+
+  /* Mobil cihazlar */
+  @media screen and (max-width: 768px) {
+    .breadcrumb-list {
+      margin: 0.5rem 2%;
+      font-size: 1.5rem;
+      gap: 0.3rem;
+    }
+    
+    .breadcrumb-item::after {
+      margin-left: 0.3rem;
+    }
+  }
+
+  /* Çok küçük ekranlar */
+  @media screen and (max-width: 480px) {
+    .breadcrumb-list {
+      font-size: 1.25rem;
+      margin: 0.5rem 1rem;
+    }
+    
+    /* Uzun metinleri kısalt */
+    .breadcrumb-item.is-active {
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Breadcrumb",
+  "tag": "section",
+  "class": "section-breadcrumb",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Breadcrumb",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

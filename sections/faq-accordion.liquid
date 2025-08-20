@@ -1,0 +1,150 @@
+{% assign faq_items = shop.metafields.custom.faq_items.value %}
+
+<section class="faq-section" id="faq-{{ section.id }}">
+  <div class="faq-container page-width">
+    {% if section.settings.heading != blank %}
+      <h2 class="faq-heading h2">{{ section.settings.heading }}</h2>
+    {% endif %}
+    {% if section.settings.description != blank %}
+      <h3 class="faq-description h3">{{ section.settings.description }}</h3>
+    {% endif %}
+
+
+    {% if faq_items != blank %}
+      <div class="faq-list">
+        {% for item in faq_items %}
+          {% assign question = item.question %}
+          {% assign answer = item.answer %}
+
+          <div class="faq-item">
+            <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-{{ forloop.index }}">
+              <span class="faq-question-text">{{ question }}</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" id="faq-answer-{{ forloop.index }}" hidden>
+              <div class="faq-answer-content">
+                {{ answer }}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>Henüz soru eklenmedi. Metaobject ile içerik girin.</p>
+    {% endif %}
+  </div>
+
+  <style>
+    .faq-section {
+      padding: 3rem 0;
+    }
+
+    .faq-heading {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .faq-description {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .faq-item {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 1rem 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.6rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .faq-icon {
+      font-size: 2rem;
+      transition: transform 0.2s ease;
+    }
+
+    .faq-answer {
+      padding: 0 1.2rem 1.2rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .faq-answer-content {
+      font-size: 1.75rem;
+      color: #444;
+    }
+
+    .faq-question[aria-expanded="true"] .faq-icon {
+      content: '-';
+      transform: rotate(180deg);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const faqItems = document.querySelectorAll('#faq-{{ section.id }} .faq-item');
+
+      faqItems.forEach((item) => {
+        const questionButton = item.querySelector('.faq-question');
+        const answer = item.querySelector('.faq-answer');
+        const icon = item.querySelector('.faq-icon');
+
+        questionButton.addEventListener('click', () => {
+          const isExpanded = questionButton.getAttribute('aria-expanded') === 'true';
+
+          questionButton.setAttribute('aria-expanded', !isExpanded);
+          answer.hidden = isExpanded;
+          icon.textContent = isExpanded ? '+' : '−';
+        });
+      });
+    });
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "FAQ Accordion",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Sıkça Sorulan Sorular"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Section Description",
+      "default": "We are here to help"
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ Accordion"
+    }
+  ]
+}
+{% endschema %}
